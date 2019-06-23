@@ -1,0 +1,38 @@
+version: '3'
+services:
+  provider-small:
+    image: "provider"
+    command: provider-small
+    container_name: "provider-small"
+    ports:
+      - "20880:20880"
+    volumes:
+      - ./logs/provider-small:/root/runtime/logs
+  provider-medium:
+    image: "provider"
+    command: provider-medium
+    container_name: "provider-medium"
+    ports:
+      - "20870:20780"
+    volumes:
+      - ./logs/provider-medium:/root/runtime/logs
+  provider-large:
+    image: "provider"
+    command: provider-large
+    container_name: "provider-large"
+    ports:
+      - "20890:20890"
+    volumes:
+      - ./logs/provider-large:/root/runtime/logs
+  consumer:
+    image: "consumer"
+    command: consumer
+    container_name: "consumer"
+    depends_on:
+      - "provider-small"
+      - "provider-medium"
+      - "provider-large"
+    ports:
+      - "8087:8087"
+    volumes:
+      - ./logs/consumer:/root/runtime/logs
