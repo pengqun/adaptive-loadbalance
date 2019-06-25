@@ -5,6 +5,8 @@ import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.RpcException;
 import org.apache.dubbo.rpc.cluster.LoadBalance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,8 +21,23 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class UserLoadBalance implements LoadBalance {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserLoadBalance.class);
+
+    static {
+//        LogUtils.turnOnDebugLog(logger);
+    }
+
+    private LoadBalance loadBalance = new LeastActiveLoadBalance();
+//    private LoadBalance loadBalance = null;
+
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Before select in load balance: {} - {}", invokers.get(0).getUrl(), url);
+        }
+        if (loadBalance != null) {
+            return loadBalance.select(invokers, url, invocation);
+        }
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
     }
 }

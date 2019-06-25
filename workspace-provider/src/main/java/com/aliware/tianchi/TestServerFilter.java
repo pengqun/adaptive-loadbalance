@@ -19,7 +19,7 @@ public class TestServerFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(TestServerFilter.class);
 
     static {
-        LogUtils.turnOnDebugLog(logger);
+//        LogUtils.turnOnDebugLog(logger);
     }
 
     @Override
