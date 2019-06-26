@@ -1,11 +1,11 @@
-package com.aliware.tianchi;
+package com.aliware.tianchi.loadbalance;
 
+import com.aliware.tianchi.CommonUtils;
+import com.aliware.tianchi.ProviderStats;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.RpcException;
-import org.apache.dubbo.rpc.RpcStatus;
-import org.apache.dubbo.rpc.cluster.LoadBalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Copied from org.apache.dubbo.rpc.cluster.loadbalance.LeastActiveLoadBalance
+ * Adapted from org.apache.dubbo.rpc.cluster.loadbalance.LeastActiveLoadBalance
  *
  * @author ./ignore 2019-06-25
  */
-public class LeastActiveLoadBalance implements LoadBalance {
+public class LeastActiveLoadBalance extends AbstractLoadBalance {
 
     private static final Logger logger = LoggerFactory.getLogger(LeastActiveLoadBalance.class);
 
@@ -26,7 +26,7 @@ public class LeastActiveLoadBalance implements LoadBalance {
     }
 
     @Override
-    public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+    public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         // Number of invokers
         int length = invokers.size();
         // The least active value of all invokers
@@ -49,7 +49,7 @@ public class LeastActiveLoadBalance implements LoadBalance {
             Invoker<T> invoker = invokers.get(i);
             String providerKey = CommonUtils.getProviderKey(invoker);
             ProviderStats providerStats = ProviderStats.getStats(providerKey);
-            if (!providerStats.isAvailable()) {
+            if (providerStats.isUnavailable()) {
                 continue;
             }
             // Get the active number of the invoke
@@ -106,9 +106,5 @@ public class LeastActiveLoadBalance implements LoadBalance {
         }
         // If all invokers have the same weight value or totalWeight=0, return evenly.
         return invokers.get(leastIndexes[ThreadLocalRandom.current().nextInt(leastCount)]);
-    }
-
-    private int getWeight(Invoker<?> invoker, Invocation invocation) {
-        return 0;
     }
 }
