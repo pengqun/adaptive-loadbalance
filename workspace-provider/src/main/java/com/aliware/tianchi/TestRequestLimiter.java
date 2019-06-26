@@ -27,19 +27,19 @@ public class TestRequestLimiter implements RequestLimiter {
      */
     @Override
     public boolean tryAcquire(Request request, int activeTaskCount) {
-        // See ThreadPoolStatusChecker
-        DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension();
-        Map<String, Object> executors = dataStore.get(Constants.EXECUTOR_SERVICE_COMPONENT_KEY);
-
-        for (Map.Entry<String, Object> entry : executors.entrySet()) {
-            ExecutorService executor = (ExecutorService) entry.getValue();
-            if (executor instanceof ThreadPoolExecutor) {
-                ThreadPoolExecutor tp = (ThreadPoolExecutor) executor;
-                if (tp.getActiveCount() >= tp.getMaximumPoolSize()) {
-                    return false;
-                }
-            }
-        }
+//        // See ThreadPoolStatusChecker
+//        DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension();
+//        Map<String, Object> executors = dataStore.get(Constants.EXECUTOR_SERVICE_COMPONENT_KEY);
+//
+//        for (Map.Entry<String, Object> entry : executors.entrySet()) {
+//            ExecutorService executor = (ExecutorService) entry.getValue();
+//            if (executor instanceof ThreadPoolExecutor) {
+//                ThreadPoolExecutor tp = (ThreadPoolExecutor) executor;
+//                if (tp.getActiveCount() >= tp.getMaximumPoolSize()) {
+//                    return false;
+//                }
+//            }
+//        }
         return true;
     }
 

@@ -32,7 +32,7 @@ public class ProviderStats {
                 stats.errorPenalty.decrementAndGet();
             }
         } else {
-            stats.errorPenalty.set(stats.active.get() / 10);
+            stats.errorPenalty.set(stats.active.get() / 5);
         }
     }
 
