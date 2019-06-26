@@ -36,7 +36,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
             return 0;
         }
         int successCounter = providerStats.getSuccessCounter();
-        int active = providerStats.getActive();
+        int active = providerStats.getActive() + 1;
         int max = providerStats.getMaxPoolSize();
         if (successCounter > 0) {
             int totalElapsed = providerStats.getTotalElapsed();
