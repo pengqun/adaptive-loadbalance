@@ -46,13 +46,13 @@ public class ProviderStats {
             stats.totalElapsed.addAndGet((int) elapsed);
         }
 
-//        if (succeeded) {
-//            if (stats.errorPenalty.get() > 0) {
-//                stats.errorPenalty.decrementAndGet();
-//            }
-//        } else {
-//            stats.errorPenalty.set(stats.active.get() / 5);
-//        }
+        if (succeeded) {
+            if (stats.errorPenalty.get() > 0) {
+                stats.errorPenalty.decrementAndGet();
+            }
+        } else {
+            stats.errorPenalty.set(stats.active.get() / 5);
+        }
     }
 
     public int getMaxPoolSize() {
@@ -76,7 +76,7 @@ public class ProviderStats {
     }
 
     public boolean isUnavailable() {
-//        return errorPenalty.get() <= 0;
-        return active.get() >= maxPoolSize;
+        return errorPenalty.get() > 0 || active.get() >= maxPoolSize;
+//        return active.get() >= maxPoolSize;
     }
 }
