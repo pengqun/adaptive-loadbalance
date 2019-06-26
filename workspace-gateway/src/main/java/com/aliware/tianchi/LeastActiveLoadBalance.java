@@ -44,12 +44,17 @@ public class LeastActiveLoadBalance implements LoadBalance {
         // Every least active invoker has the same weight value?
         boolean sameWeight = true;
 
-
         // Filter out all the least active invokers
         for (int i = 0; i < length; i++) {
             Invoker<T> invoker = invokers.get(i);
+            String providerKey = CommonUtils.getProviderKey(invoker);
+            ProviderStats providerStats = ProviderStats.getStats(providerKey);
+            if (!providerStats.isAvailable()) {
+                continue;
+            }
             // Get the active number of the invoke
-            int active = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName()).getActive();
+            int active = providerStats.getActive();
+
             // Get the weight of the invoke configuration. The default value is 100.
             int afterWarmup = getWeight(invoker, invocation);
             // save for later use

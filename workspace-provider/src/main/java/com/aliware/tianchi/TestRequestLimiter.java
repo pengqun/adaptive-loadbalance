@@ -1,7 +1,14 @@
 package com.aliware.tianchi;
 
+import org.apache.dubbo.common.Constants;
+import org.apache.dubbo.common.extension.ExtensionLoader;
+import org.apache.dubbo.common.store.DataStore;
 import org.apache.dubbo.remoting.exchange.Request;
 import org.apache.dubbo.remoting.transport.RequestLimiter;
+
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author daofeng.xjf
@@ -20,6 +27,19 @@ public class TestRequestLimiter implements RequestLimiter {
      */
     @Override
     public boolean tryAcquire(Request request, int activeTaskCount) {
+        // See ThreadPoolStatusChecker
+        DataStore dataStore = ExtensionLoader.getExtensionLoader(DataStore.class).getDefaultExtension();
+        Map<String, Object> executors = dataStore.get(Constants.EXECUTOR_SERVICE_COMPONENT_KEY);
+
+        for (Map.Entry<String, Object> entry : executors.entrySet()) {
+            ExecutorService executor = (ExecutorService) entry.getValue();
+            if (executor instanceof ThreadPoolExecutor) {
+                ThreadPoolExecutor tp = (ThreadPoolExecutor) executor;
+                if (tp.getActiveCount() >= tp.getMaximumPoolSize()) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
