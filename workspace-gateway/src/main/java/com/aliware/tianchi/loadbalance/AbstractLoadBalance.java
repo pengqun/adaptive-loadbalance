@@ -1,6 +1,7 @@
 package com.aliware.tianchi.loadbalance;
 
 import com.aliware.tianchi.CommonUtils;
+import com.aliware.tianchi.LogUtils;
 import com.aliware.tianchi.ProviderStats;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
@@ -38,7 +39,8 @@ public abstract class AbstractLoadBalance implements LoadBalance {
             return 0;
         }
 //        return getWeightByRtAndActive(providerKey, providerStats);
-        return getWeightByActive(providerKey, providerStats);
+//        return getWeightByActive(providerKey, providerStats);
+        return getWeightByRt(providerKey, providerStats);
     }
 
     private int getWeightByRtAndActive(String providerKey, ProviderStats providerStats) {

@@ -32,7 +32,7 @@ public class TestClientFilter implements Filter {
 
         try {
             ProviderStats.beginRequest(providerKey);
-//            invocation.getAttachments().put("req-start", String.valueOf(System.currentTimeMillis()));
+            invocation.getAttachments().put("req-start", String.valueOf(System.currentTimeMillis()));
             Result result = invoker.invoke(invocation);
             if (logger.isDebugEnabled()) {
                 logger.debug("After invoke client filter: {}", result);
@@ -50,9 +50,9 @@ public class TestClientFilter implements Filter {
         if (logger.isDebugEnabled()) {
             logger.debug("On response in client filter: {}", result);
         }
-//        long requestStart = Long.parseLong(invocation.getAttachments().get("req-start"));
-//        long elapsed = System.currentTimeMillis() - requestStart;
-        long elapsed = 0;
+        long requestStart = Long.parseLong(invocation.getAttachments().get("req-start"));
+        long elapsed = System.currentTimeMillis() - requestStart;
+//        long elapsed = 0;
 
         String providerKey = CommonUtils.getProviderKey(invoker);
         ProviderStats.endRequest(providerKey, elapsed, !result.hasException());
