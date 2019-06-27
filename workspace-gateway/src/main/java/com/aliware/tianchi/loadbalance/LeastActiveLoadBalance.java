@@ -57,6 +57,7 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance {
 
             // Get the weight of the invoke configuration. The default value is 100.
             int afterWarmup = getWeight(invoker, invocation);
+
             // save for later use
             weights[i] = afterWarmup;
             // If it is the first invoker or the active number of the invoker is less than the current least active number
@@ -106,5 +107,10 @@ public class LeastActiveLoadBalance extends AbstractLoadBalance {
         }
         // If all invokers have the same weight value or totalWeight=0, return evenly.
         return invokers.get(leastIndexes[ThreadLocalRandom.current().nextInt(leastCount)]);
+    }
+
+    @Override
+    protected int getWeight(Invoker<?> invoker, Invocation invocation) {
+        return 1;
     }
 }

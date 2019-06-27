@@ -29,8 +29,8 @@ public class UserLoadBalance implements LoadBalance {
 //        LogUtils.turnOnDebugLog(logger);
     }
 
-//    private LoadBalance loadBalance = new LeastActiveLoadBalance();
-    private LoadBalance loadBalance = new RandomLoadBalance();
+    private LoadBalance loadBalance = new LeastActiveLoadBalance();
+//    private LoadBalance loadBalance = new RandomLoadBalance();
 //    private LoadBalance loadBalance = null;
 
     @Override
