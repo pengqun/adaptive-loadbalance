@@ -1,7 +1,6 @@
 package com.aliware.tianchi.loadbalance;
 
 import com.aliware.tianchi.CommonUtils;
-import com.aliware.tianchi.LogUtils;
 import com.aliware.tianchi.ProviderStats;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
@@ -27,12 +26,6 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) {
-//        if (CollectionUtils.isEmpty(invokers)) {
-//            return null;
-//        }
-//        if (invokers.size() == 1) {
-//            return invokers.get(0);
-//        }
         return doSelect(invokers, url, invocation);
     }
 
@@ -44,6 +37,11 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (providerStats.isUnavailable()) {
             return 0;
         }
+//        return getWeightByRtAndActive(providerKey, providerStats);
+        return getWeightByActive(providerKey, providerStats);
+    }
+
+    private int getWeightByRtAndActive(String providerKey, ProviderStats providerStats) {
         int successCounter = providerStats.getSuccessCounter();
         int totalElapsed = providerStats.getTotalElapsed();
         int active = providerStats.getActive() + 1;
@@ -55,6 +53,31 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (logger.isDebugEnabled()) {
             logger.debug("Weight for {}: {}, success - {}, elapsed - {}, active - {}, max - {}",
                     providerKey, weight, successCounter, totalElapsed, active, max);
+        }
+        return weight;
+    }
+
+    private int getWeightByActive(String providerKey, ProviderStats providerStats) {
+        int active = providerStats.getActive() + 1;
+        int max = providerStats.getMaxPoolSize();
+        int weight = 10000 * max / active;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Weight for {}: {}, active - {}, max - {}",
+                    providerKey, weight, active, max);
+        }
+        return weight;
+    }
+
+    private int getWeightByRt(String providerKey, ProviderStats providerStats) {
+        int successCounter = providerStats.getSuccessCounter();
+        int totalElapsed = providerStats.getTotalElapsed();
+        int weight = DEFAULT_WEIGHT;
+        if (successCounter > 0) {
+            weight = (int) ((10000L * successCounter) / totalElapsed);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Weight for {}: {}, success - {}, elapsed - {}",
+                    providerKey, weight, successCounter, totalElapsed);
         }
         return weight;
     }
