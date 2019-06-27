@@ -57,8 +57,4 @@ public class TestClientFilter implements Filter {
         ProviderStats.endRequest(providerKey, elapsed, !result.hasException());
         return result;
     }
-
-//    private void beforeInvoke(Invoker<?> invoker, Invocation invocation) {
-//
-//    }
 }

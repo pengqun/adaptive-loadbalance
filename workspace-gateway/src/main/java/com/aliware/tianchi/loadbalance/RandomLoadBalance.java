@@ -57,11 +57,11 @@ public class RandomLoadBalance extends AbstractLoadBalance {
                 }
             }
         }
-        if (totalWeight == 0) {
-            // all unavailable
-            System.out.println("All providers are available for now");
-            throw new RpcException("All providers are available for now");
-        }
+//        if (totalWeight == 0) {
+//            // all unavailable
+//            System.out.println("All providers are available for now");
+//            throw new RpcException("All providers are available for now");
+//        }
         // If all invokers have the same weight value or totalWeight=0, return evenly.
         return invokers.get(ThreadLocalRandom.current().nextInt(length));
     }
