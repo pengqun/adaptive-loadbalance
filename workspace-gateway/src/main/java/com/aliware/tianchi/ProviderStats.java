@@ -21,6 +21,8 @@ public class ProviderStats {
     private final AtomicInteger successCounter = new AtomicInteger(0);
     private final AtomicInteger totalElapsed = new AtomicInteger(0);
 
+    private int lastElapsed = 0;
+
     public static ProviderStats getStats(String providerKey) {
         return allProviderStats.computeIfAbsent(providerKey, (k -> new ProviderStats()));
     }
@@ -34,16 +36,22 @@ public class ProviderStats {
         ProviderStats stats = getStats(providerKey);
         stats.active.decrementAndGet();
 
+//        if (succeeded) {
+//            int count = stats.successCounter.incrementAndGet();
+//            if (count == RESET_COUNTER_INTERVAL) {
+//                stats.successCounter.set(1);
+//                stats.totalElapsed.set((int) elapsed);
+//            } else {
+//                stats.totalElapsed.addAndGet((int) elapsed);
+//            }
+//        } else {
+//            stats.totalElapsed.addAndGet((int) elapsed);
+//        }
+
         if (succeeded) {
-            int count = stats.successCounter.incrementAndGet();
-            if (count == RESET_COUNTER_INTERVAL) {
-                stats.successCounter.set(1);
-                stats.totalElapsed.set((int) elapsed);
-            } else {
-                stats.totalElapsed.addAndGet((int) elapsed);
-            }
+            stats.lastElapsed = (int) elapsed;
         } else {
-            stats.totalElapsed.addAndGet((int) elapsed);
+            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
         }
 
 //        if (succeeded) {
@@ -73,6 +81,10 @@ public class ProviderStats {
 
     public int getTotalElapsed() {
         return totalElapsed.get();
+    }
+
+    public int getLastElapsed() {
+        return lastElapsed;
     }
 
     public boolean isUnavailable() {
