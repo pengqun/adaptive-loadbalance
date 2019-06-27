@@ -20,7 +20,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
     private static final Logger logger = LoggerFactory.getLogger(LeastActiveLoadBalance.class);
 
     static {
-        LogUtils.turnOnDebugLog(logger);
+//        LogUtils.turnOnDebugLog(logger);
     }
 
     private static final int DEFAULT_WEIGHT = 1;
