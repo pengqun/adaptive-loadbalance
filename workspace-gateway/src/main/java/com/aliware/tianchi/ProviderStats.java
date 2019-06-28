@@ -36,23 +36,23 @@ public class ProviderStats {
         ProviderStats stats = getStats(providerKey);
         stats.active.decrementAndGet();
 
-//        if (succeeded) {
-//            int count = stats.successCounter.incrementAndGet();
-//            if (count == RESET_COUNTER_INTERVAL) {
-//                stats.successCounter.set(1);
-//                stats.totalElapsed.set((int) elapsed);
-//            } else {
-//                stats.totalElapsed.addAndGet((int) elapsed);
-//            }
-//        } else {
-//            stats.totalElapsed.addAndGet((int) elapsed);
-//        }
-
         if (succeeded) {
-            stats.lastElapsed = (int) elapsed;
+            int count = stats.successCounter.incrementAndGet();
+            if (count == RESET_COUNTER_INTERVAL) {
+                stats.successCounter.set(1);
+                stats.totalElapsed.set((int) elapsed);
+            } else {
+                stats.totalElapsed.addAndGet((int) elapsed);
+            }
         } else {
-            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
+            stats.totalElapsed.addAndGet((int) elapsed);
         }
+
+//        if (succeeded) {
+//            stats.lastElapsed = (int) elapsed;
+//        } else {
+//            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
+//        }
 
 //        if (succeeded) {
 //            if (stats.errorPenalty.get() > 0) {
