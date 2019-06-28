@@ -2,6 +2,7 @@ package com.aliware.tianchi;
 
 import com.aliware.tianchi.loadbalance.LeastRtLoadBalance;
 import com.aliware.tianchi.loadbalance.RandomLoadBalance;
+import com.aliware.tianchi.loadbalance.RoundRobinLoadBalance;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
@@ -31,8 +32,8 @@ public class UserLoadBalance implements LoadBalance {
 
 //    private LoadBalance loadBalance = null;
 //    private LoadBalance loadBalance = new LeastActiveLoadBalance();
-    private LoadBalance loadBalance = new RandomLoadBalance();
-//    private LoadBalance loadBalance = new RoundRobinLoadBalance();
+//    private LoadBalance loadBalance = new RandomLoadBalance();
+    private LoadBalance loadBalance = new RoundRobinLoadBalance();
 //    private LoadBalance loadBalance = new LeastRtLoadBalance();
 
     @Override
