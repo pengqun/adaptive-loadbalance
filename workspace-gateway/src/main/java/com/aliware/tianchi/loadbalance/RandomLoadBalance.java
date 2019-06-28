@@ -27,8 +27,6 @@ public class RandomLoadBalance extends AbstractLoadBalance {
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         // Number of invokers
         int length = invokers.size();
-        // Every invoker has the same weight?
-        boolean sameWeight = true;
         // the weight of every invokers
         int[] weights = new int[length];
         // the first invoker's weight
@@ -42,11 +40,8 @@ public class RandomLoadBalance extends AbstractLoadBalance {
             weights[i] = weight;
             // Sum
             totalWeight += weight;
-            if (sameWeight && weight != firstWeight) {
-                sameWeight = false;
-            }
         }
-        if (totalWeight > 0 && !sameWeight) {
+        if (totalWeight > 0) {
             // If (not every invoker has the same weight & at least one invoker's weight>0), select randomly based on totalWeight.
             int offset = ThreadLocalRandom.current().nextInt(totalWeight);
             // Return a invoker based on the random value.
