@@ -40,8 +40,9 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         }
 //        return getWeightByRtAndActive(providerKey, providerStats);
 //        return getWeightByActive(providerKey, providerStats);
-        return getWeightByRt(providerKey, providerStats);
+//        return getWeightByRt(providerKey, providerStats);
 //        return getWeightByLastRt(providerKey, providerStats);
+        return getWeightByEwmaRt(providerKey, providerStats);
     }
 
     private int getWeightByRtAndActive(String providerKey, ProviderStats providerStats) {
@@ -95,6 +96,19 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (logger.isDebugEnabled()) {
             logger.debug("Weight for {}: {}, lastElapsed - {}",
                     providerKey, weight, lastElapsed);
+        }
+        return weight;
+    }
+
+    private int getWeightByEwmaRt(String providerKey, ProviderStats providerStats) {
+        double ewmaElapsed = providerStats.getEwmaElapsed();
+        int weight = DEFAULT_WEIGHT;
+        if (ewmaElapsed > 0) {
+            weight = (int) (100000 / ewmaElapsed);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Weight for {}: {}, ewmaElapsed - {}",
+                    providerKey, weight, ewmaElapsed);
         }
         return weight;
     }

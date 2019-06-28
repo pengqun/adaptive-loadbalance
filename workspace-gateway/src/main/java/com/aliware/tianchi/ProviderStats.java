@@ -12,6 +12,7 @@ public class ProviderStats {
     private static final ConcurrentMap<String, ProviderStats> allProviderStats = new ConcurrentHashMap<>();
 
     private static final int RESET_COUNTER_INTERVAL = 10;
+    private static final double EWMA_ALPHA = 0.5;
 
     private int maxPoolSize = Integer.MAX_VALUE;
 
@@ -22,6 +23,8 @@ public class ProviderStats {
     private final AtomicInteger totalElapsed = new AtomicInteger(0);
 
     private int lastElapsed = 0;
+
+    private double ewmaElapsed = -1;
 
     public static ProviderStats getStats(String providerKey) {
         return allProviderStats.computeIfAbsent(providerKey, (k -> new ProviderStats()));
@@ -36,16 +39,24 @@ public class ProviderStats {
         ProviderStats stats = getStats(providerKey);
         stats.active.decrementAndGet();
 
+//        if (succeeded) {
+//            int count = stats.successCounter.incrementAndGet();
+//            if (count == RESET_COUNTER_INTERVAL) {
+//                stats.successCounter.set(1);
+//                stats.totalElapsed.set((int) elapsed);
+//            } else {
+//                stats.totalElapsed.addAndGet((int) elapsed);
+//            }
+//        } else {
+//            stats.totalElapsed.addAndGet((int) elapsed);
+//        }
+
         if (succeeded) {
-            int count = stats.successCounter.incrementAndGet();
-            if (count == RESET_COUNTER_INTERVAL) {
-                stats.successCounter.set(1);
-                stats.totalElapsed.set((int) elapsed);
+            if (stats.ewmaElapsed == -1) {
+                stats.ewmaElapsed = elapsed;
             } else {
-                stats.totalElapsed.addAndGet((int) elapsed);
+                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
             }
-        } else {
-            stats.totalElapsed.addAndGet((int) elapsed);
         }
 
 //        if (succeeded) {
@@ -85,6 +96,10 @@ public class ProviderStats {
 
     public int getLastElapsed() {
         return lastElapsed;
+    }
+
+    public double getEwmaElapsed() {
+        return ewmaElapsed;
     }
 
     public boolean isUnavailable() {

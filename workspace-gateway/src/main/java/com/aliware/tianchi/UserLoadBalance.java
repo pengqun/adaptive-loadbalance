@@ -1,6 +1,7 @@
 package com.aliware.tianchi;
 
 import com.aliware.tianchi.loadbalance.LeastRtLoadBalance;
+import com.aliware.tianchi.loadbalance.RandomLoadBalance;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
@@ -30,9 +31,9 @@ public class UserLoadBalance implements LoadBalance {
 
 //    private LoadBalance loadBalance = null;
 //    private LoadBalance loadBalance = new LeastActiveLoadBalance();
-//    private LoadBalance loadBalance = new RandomLoadBalance();
+    private LoadBalance loadBalance = new RandomLoadBalance();
 //    private LoadBalance loadBalance = new RoundRobinLoadBalance();
-    private LoadBalance loadBalance = new LeastRtLoadBalance();
+//    private LoadBalance loadBalance = new LeastRtLoadBalance();
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
