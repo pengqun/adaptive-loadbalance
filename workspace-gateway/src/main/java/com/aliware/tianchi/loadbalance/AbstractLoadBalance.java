@@ -39,10 +39,10 @@ public abstract class AbstractLoadBalance implements LoadBalance {
             return 0;
         }
 //        return getWeightByRtAndActive(providerKey, providerStats);
-        return getWeightByActive(providerKey, providerStats);
+//        return getWeightByActive(providerKey, providerStats);
 //        return getWeightByRt(providerKey, providerStats);
 //        return getWeightByLastRt(providerKey, providerStats);
-//        return getWeightByEwmaRt(providerKey, providerStats);
+        return getWeightByEwmaRt(providerKey, providerStats);
 //        return getWeightByEwmaRtAndActive(providerKey, providerStats);
     }
 
