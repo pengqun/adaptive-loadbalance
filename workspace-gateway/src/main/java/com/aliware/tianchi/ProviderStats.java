@@ -11,7 +11,7 @@ public class ProviderStats {
 
     private static final ConcurrentMap<String, ProviderStats> allProviderStats = new ConcurrentHashMap<>();
 
-    private static final int RESET_COUNTER_INTERVAL = 1000;
+    private static final int RESET_COUNTER_INTERVAL = 100;
     private static final double EWMA_ALPHA = 0.001;
 
     private int maxPoolSize = Integer.MAX_VALUE;
