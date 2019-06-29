@@ -11,7 +11,7 @@ public class ProviderStats {
 
     private static final ConcurrentMap<String, ProviderStats> allProviderStats = new ConcurrentHashMap<>();
 
-    private static final int RESET_COUNTER_INTERVAL = 10;
+    private static final int RESET_COUNTER_INTERVAL = 1000;
     private static final double EWMA_ALPHA = 0.001;
 
     private int maxPoolSize = Integer.MAX_VALUE;
@@ -39,25 +39,25 @@ public class ProviderStats {
         ProviderStats stats = getStats(providerKey);
         stats.active.decrementAndGet();
 
-//        if (succeeded) {
-//            int count = stats.successCounter.incrementAndGet();
-//            if (count == RESET_COUNTER_INTERVAL) {
-//                stats.successCounter.set(1);
-//                stats.totalElapsed.set((int) elapsed);
-//            } else {
-//                stats.totalElapsed.addAndGet((int) elapsed);
-//            }
-//        } else {
-//            stats.totalElapsed.addAndGet((int) elapsed);
-//        }
-
         if (succeeded) {
-            if (stats.ewmaElapsed == -1) {
-                stats.ewmaElapsed = elapsed;
+            int count = stats.successCounter.incrementAndGet();
+            if (count == RESET_COUNTER_INTERVAL) {
+                stats.successCounter.set(1);
+                stats.totalElapsed.set((int) elapsed);
             } else {
-                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
+                stats.totalElapsed.addAndGet((int) elapsed);
             }
+        } else {
+            stats.totalElapsed.addAndGet((int) elapsed);
         }
+
+//        if (succeeded) {
+//            if (stats.ewmaElapsed == -1) {
+//                stats.ewmaElapsed = elapsed;
+//            } else {
+//                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
+//            }
+//        }
 
 //        if (succeeded) {
 //            stats.lastElapsed = (int) elapsed;
@@ -103,7 +103,7 @@ public class ProviderStats {
     }
 
     public boolean isUnavailable() {
-        return errorPenalty.get() > 0 || active.get() >= maxPoolSize;
+        return active.get() >= maxPoolSize || errorPenalty.get() > 0;
 //        return active.get() >= maxPoolSize;
     }
 }
