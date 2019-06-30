@@ -67,7 +67,8 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         int active = providerStats.getActive() + 1;
         int max = providerStats.getMaxPoolSize();
 //        int weight = 10000 * max / active;
-        int weight = max;
+//        int weight = max;
+        int weight = max - active;
         if (logger.isDebugEnabled()) {
             logger.debug("Weight for {}: {}, active - {}, max - {}",
                     providerKey, weight, active, max);
