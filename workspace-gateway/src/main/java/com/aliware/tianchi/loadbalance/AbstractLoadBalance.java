@@ -35,9 +35,9 @@ public abstract class AbstractLoadBalance implements LoadBalance {
     protected int getWeight(Invoker<?> invoker, Invocation invocation) {
         String providerKey = CommonUtils.getProviderKey(invoker);
         ProviderStats providerStats = ProviderStats.getStats(providerKey);
-        if (providerStats.isUnavailable()) {
-            return 0;
-        }
+//        if (providerStats.isUnavailable()) {
+//            return 0;
+//        }
 //        return getWeightByRtAndActive(providerKey, providerStats);
         return getWeightByActive(providerKey, providerStats);
 //        return getWeightByRt(providerKey, providerStats);

@@ -39,17 +39,17 @@ public class ProviderStats {
         ProviderStats stats = getStats(providerKey);
         stats.active.decrementAndGet();
 
-        if (succeeded) {
-            int count = stats.successCounter.incrementAndGet();
-            if (count == RESET_COUNTER_INTERVAL) {
-                stats.successCounter.set(1);
-                stats.totalElapsed.set((int) elapsed);
-            } else {
-                stats.totalElapsed.addAndGet((int) elapsed);
-            }
-        } else {
-            stats.totalElapsed.addAndGet((int) elapsed);
-        }
+//        if (succeeded) {
+//            int count = stats.successCounter.incrementAndGet();
+//            if (count == RESET_COUNTER_INTERVAL) {
+//                stats.successCounter.set(1);
+//                stats.totalElapsed.set((int) elapsed);
+//            } else {
+//                stats.totalElapsed.addAndGet((int) elapsed);
+//            }
+//        } else {
+//            stats.totalElapsed.addAndGet((int) elapsed);
+//        }
 
 //        if (succeeded) {
 //            if (stats.ewmaElapsed == -1) {
@@ -65,13 +65,13 @@ public class ProviderStats {
 //            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
 //        }
 
-        if (succeeded) {
-            if (stats.errorPenalty.get() > 0) {
-                stats.errorPenalty.decrementAndGet();
-            }
-        } else {
-            stats.errorPenalty.set(stats.active.get() / 5);
-        }
+//        if (succeeded) {
+//            if (stats.errorPenalty.get() > 0) {
+//                stats.errorPenalty.decrementAndGet();
+//            }
+//        } else {
+//            stats.errorPenalty.set(stats.active.get() / 5);
+//        }
     }
 
     public int getMaxPoolSize() {
@@ -103,7 +103,7 @@ public class ProviderStats {
     }
 
     public boolean isUnavailable() {
-        return active.get() >= maxPoolSize || errorPenalty.get() > 0;
-//        return active.get() >= maxPoolSize;
+//        return active.get() >= maxPoolSize || errorPenalty.get() > 0;
+        return active.get() >= maxPoolSize;
     }
 }
