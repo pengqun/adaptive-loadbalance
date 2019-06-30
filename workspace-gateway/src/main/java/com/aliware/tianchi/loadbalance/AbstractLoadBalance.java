@@ -38,8 +38,8 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (providerStats.isUnavailable()) {
             return 0;
         }
-        return getWeightByRtAndActive(providerKey, providerStats);
-//        return getWeightByActive(providerKey, providerStats);
+//        return getWeightByRtAndActive(providerKey, providerStats);
+        return getWeightByActive(providerKey, providerStats);
 //        return getWeightByRt(providerKey, providerStats);
 //        return getWeightByLastRt(providerKey, providerStats);
 //        return getWeightByEwmaRt(providerKey, providerStats);
@@ -66,7 +66,8 @@ public abstract class AbstractLoadBalance implements LoadBalance {
     private int getWeightByActive(String providerKey, ProviderStats providerStats) {
         int active = providerStats.getActive() + 1;
         int max = providerStats.getMaxPoolSize();
-        int weight = 10000 * max / active;
+//        int weight = 10000 * max / active;
+        int weight = max;
         if (logger.isDebugEnabled()) {
             logger.debug("Weight for {}: {}, active - {}, max - {}",
                     providerKey, weight, active, max);
