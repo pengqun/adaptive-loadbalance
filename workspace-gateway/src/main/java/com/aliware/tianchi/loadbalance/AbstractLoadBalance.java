@@ -1,7 +1,6 @@
 package com.aliware.tianchi.loadbalance;
 
 import com.aliware.tianchi.CommonUtils;
-import com.aliware.tianchi.LogUtils;
 import com.aliware.tianchi.ProviderStats;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
@@ -39,11 +38,12 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 //            return 0;
 //        }
 //        return getWeightByRtAndActive(providerKey, providerStats);
-        return getWeightByActive(providerKey, providerStats);
+//        return getWeightByActive(providerKey, providerStats);
 //        return getWeightByRt(providerKey, providerStats);
 //        return getWeightByLastRt(providerKey, providerStats);
 //        return getWeightByEwmaRt(providerKey, providerStats);
 //        return getWeightByEwmaRtAndActive(providerKey, providerStats);
+        return getWeightByCapacity(providerKey, providerStats);
     }
 
     private int getWeightByRtAndActive(String providerKey, ProviderStats providerStats) {
@@ -128,6 +128,18 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (logger.isDebugEnabled()) {
             logger.debug("Weight for {}: {}, ewmaElapsed- {}, active - {}, max - {}",
                     providerKey, weight, ewmaElapsed, active, max);
+        }
+        return weight;
+    }
+
+    private int getWeightByCapacity(String providerKey, ProviderStats providerStats) {
+        int active = providerStats.getActive();
+        int max = providerStats.getMaxPoolSize();
+        int ewmaElapsed = (int) providerStats.getEwmaElapsed();
+        int weight = (max - active) * (ewmaElapsed > 0 ? 10000 / ewmaElapsed: 1);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Weight for {}: {}, active - {}, max - {}",
+                    providerKey, weight, active, max);
         }
         return weight;
     }

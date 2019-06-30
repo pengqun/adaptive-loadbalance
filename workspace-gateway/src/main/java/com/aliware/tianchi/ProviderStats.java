@@ -51,13 +51,13 @@ public class ProviderStats {
 //            stats.totalElapsed.addAndGet((int) elapsed);
 //        }
 
-//        if (succeeded) {
-//            if (stats.ewmaElapsed == -1) {
-//                stats.ewmaElapsed = elapsed;
-//            } else {
-//                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
-//            }
-//        }
+        if (succeeded) {
+            if (stats.ewmaElapsed == -1) {
+                stats.ewmaElapsed = elapsed;
+            } else {
+                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
+            }
+        }
 
 //        if (succeeded) {
 //            stats.lastElapsed = (int) elapsed;
