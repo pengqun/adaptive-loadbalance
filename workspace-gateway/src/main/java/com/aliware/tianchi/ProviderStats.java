@@ -1,5 +1,8 @@
 package com.aliware.tianchi;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,6 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author ./ignore 2019-06-26
  */
 public class ProviderStats {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProviderStats.class);
+
+    static {
+//        LogUtils.turnOnDebugLog(logger);
+    }
 
     private static final ConcurrentMap<String, ProviderStats> allProviderStats = new ConcurrentHashMap<>();
 
@@ -56,6 +65,9 @@ public class ProviderStats {
                 stats.ewmaElapsed = elapsed;
             } else {
                 stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Update ewma for {} to {} by {}", providerKey, stats.ewmaElapsed, elapsed);
             }
         }
 
