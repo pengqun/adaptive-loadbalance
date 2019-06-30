@@ -80,7 +80,7 @@ public class TestClientFilter implements Filter {
                 DefaultFuture defaultFuture = (DefaultFuture) (futureAdapter.getFuture());
                 int ewmaElapsed = (int) ProviderStats.getStats(providerKey).getEwmaElapsed();
                 if (ewmaElapsed > 0) {
-                    long timeout = ewmaElapsed * 3;
+                    long timeout = ewmaElapsed * 5;
                     TIME_OUT_TIMER.newTimeout(new TimeoutCheckTask(defaultFuture), timeout, TimeUnit.MILLISECONDS);
                     if (logger.isDebugEnabled()) {
                         logger.debug("Set timeout to {} ms for request {}", timeout, defaultFuture.getRequest().getId());
