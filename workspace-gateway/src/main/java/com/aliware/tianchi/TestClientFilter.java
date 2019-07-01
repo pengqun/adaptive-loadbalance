@@ -62,10 +62,8 @@ public class TestClientFilter implements Filter {
 
 //            future.setCallback(null);
             Response timeoutResponse = new Response(requestId);
-            timeoutResponse.setStatus(Response.OK);
-            timeoutResponse.setResult("");
-//            timeoutResponse.setStatus(Response.CLIENT_TIMEOUT);
-//            timeoutResponse.setErrorMessage("Timeout by filter");
+            timeoutResponse.setStatus(Response.CLIENT_TIMEOUT);
+            timeoutResponse.setErrorMessage("Timeout by filter");
             DefaultFuture.received(null, timeoutResponse);
         }
     }
@@ -90,7 +88,7 @@ public class TestClientFilter implements Filter {
                 int ewmaElapsed = (int) ProviderStats.getStats(providerKey).getEwmaElapsed();
                 if (ewmaElapsed > 0) {
                     Timeout timeout = TIME_OUT_TIMER.newTimeout(new TimeoutCheckTask(defaultFuture),
-                            ewmaElapsed * 5, TimeUnit.MILLISECONDS);
+                            (long) (ewmaElapsed * 5.5), TimeUnit.MILLISECONDS);
                     timeoutMap.put(requestId, timeout);
                     invocation.getAttachments().put("req-id", String.valueOf(requestId));
                     if (logger.isDebugEnabled()) {
