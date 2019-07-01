@@ -14,9 +14,9 @@ import org.apache.dubbo.rpc.protocol.dubbo.FutureAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static org.apache.dubbo.common.Constants.TIMEOUT_KEY;
 
 /**
  * @author daofeng.xjf
@@ -30,10 +30,16 @@ public class TestClientFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(TestClientFilter.class);
 
-    public static final Timer TIME_OUT_TIMER = new HashedWheelTimer(
+    static {
+//        LogUtils.turnOnDebugLog(logger);
+    }
+
+    private static final Timer TIME_OUT_TIMER = new HashedWheelTimer(
             new NamedThreadFactory("my-future-timeout", true),
             30,
             TimeUnit.MILLISECONDS);
+
+    private static final Map<Long, Timeout> timeoutMap = new HashMap<>();
 
     private static class TimeoutCheckTask implements TimerTask {
 
@@ -48,19 +54,18 @@ public class TestClientFilter implements Filter {
             if (future == null || future.isDone()) {
                 return;
             }
+            long requestId = future.getRequest().getId();
+            timeoutMap.remove(requestId);
             if (logger.isDebugEnabled()) {
-                logger.debug("Timeout for request {}", future.getRequest().getId());
+                logger.debug("Timeout for request {}", requestId);
             }
+
 //            future.setCallback(null);
-            Response timeoutResponse = new Response(future.getRequest().getId());
+            Response timeoutResponse = new Response(requestId);
             timeoutResponse.setStatus(Response.CLIENT_TIMEOUT);
             timeoutResponse.setErrorMessage("Timeout by filter");
             DefaultFuture.received(null, timeoutResponse);
         }
-    }
-
-    static {
-//        LogUtils.turnOnDebugLog(logger);
     }
 
     @Override
@@ -78,12 +83,16 @@ public class TestClientFilter implements Filter {
             if (result instanceof SimpleAsyncRpcResult) {
                 FutureAdapter futureAdapter = (FutureAdapter) ((SimpleAsyncRpcResult) result).getValueFuture();
                 DefaultFuture defaultFuture = (DefaultFuture) (futureAdapter.getFuture());
+                long requestId = defaultFuture.getRequest().getId();
+
                 int ewmaElapsed = (int) ProviderStats.getStats(providerKey).getEwmaElapsed();
                 if (ewmaElapsed > 0) {
-                    long timeout = ewmaElapsed * 6;
-                    TIME_OUT_TIMER.newTimeout(new TimeoutCheckTask(defaultFuture), timeout, TimeUnit.MILLISECONDS);
+                    Timeout timeout = TIME_OUT_TIMER.newTimeout(new TimeoutCheckTask(defaultFuture),
+                            ewmaElapsed * 6, TimeUnit.MILLISECONDS);
+                    timeoutMap.put(requestId, timeout);
+                    invocation.getAttachments().put("req-id", String.valueOf(requestId));
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Set timeout to {} ms for request {}", timeout, defaultFuture.getRequest().getId());
+                        logger.debug("Set timeout to {} ms for request {}", timeout, requestId);
                     }
                 }
             }
@@ -107,6 +116,19 @@ public class TestClientFilter implements Filter {
         long requestStart = Long.parseLong(invocation.getAttachments().get("req-start"));
         long elapsed = System.currentTimeMillis() - requestStart;
 //        long elapsed = 0;
+
+        String requestIdStr = invocation.getAttachments().get("req-id");
+        if (requestIdStr != null) {
+            long requestId = Long.parseLong(requestIdStr);
+            Timeout timeout = timeoutMap.get(requestId);
+            if (timeout != null) {
+                timeout.cancel();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Remove timeout for request: {}", requestId);
+                }
+                timeoutMap.remove(requestId);
+            }
+        }
 
         String providerKey = CommonUtils.getProviderKey(invoker);
         ProviderStats.endRequest(providerKey, elapsed, !result.hasException());
