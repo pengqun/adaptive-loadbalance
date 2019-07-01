@@ -60,16 +60,16 @@ public class ProviderStats {
 //            stats.totalElapsed.addAndGet((int) elapsed);
 //        }
 
-        if (succeeded) {
+//        if (succeeded) {
             if (stats.ewmaElapsed == -1) {
                 stats.ewmaElapsed = elapsed;
             } else {
                 stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Update ewma for {} to {} by {}", providerKey, stats.ewmaElapsed, elapsed);
-            }
-        }
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Update ewma for {} to {} by {}", providerKey, stats.ewmaElapsed, elapsed);
+//            }
+//        }
 
 //        if (succeeded) {
 //            stats.lastElapsed = (int) elapsed;

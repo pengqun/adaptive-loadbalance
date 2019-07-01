@@ -38,12 +38,10 @@ public class UserLoadBalance implements LoadBalance {
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Before select in load balance: {} - {}", invokers.get(0).getUrl(), url);
-        }
-        if (loadBalance != null) {
-            return loadBalance.select(invokers, url, invocation);
-        }
-        return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("Before select in load balance: {} - {}", invokers.get(0).getUrl(), url);
+//        }
+        return loadBalance.select(invokers, url, invocation);
+//        return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
     }
 }

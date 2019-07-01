@@ -137,10 +137,10 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         int max = providerStats.getMaxPoolSize();
         int ewmaElapsed = (int) providerStats.getEwmaElapsed();
         int weight = (max - active) * (ewmaElapsed > 0 ? 10000 / ewmaElapsed: 1);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Weight for {}: {}, active - {}, max - {}",
-                    providerKey, weight, active, max);
-        }
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("Weight for {}: {}, active - {}, max - {}",
+//                    providerKey, weight, active, max);
+//        }
         return weight;
     }
 }
