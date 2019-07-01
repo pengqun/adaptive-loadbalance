@@ -90,7 +90,7 @@ public class TestClientFilter implements Filter {
                 int ewmaElapsed = (int) ProviderStats.getStats(providerKey).getEwmaElapsed();
                 if (ewmaElapsed > 0) {
                     Timeout timeout = TIME_OUT_TIMER.newTimeout(new TimeoutCheckTask(defaultFuture),
-                            ewmaElapsed * 6, TimeUnit.MILLISECONDS);
+                            ewmaElapsed * 5, TimeUnit.MILLISECONDS);
                     timeoutMap.put(requestId, timeout);
                     invocation.getAttachments().put("req-id", String.valueOf(requestId));
                     if (logger.isDebugEnabled()) {
