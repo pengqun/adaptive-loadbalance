@@ -62,8 +62,10 @@ public class TestClientFilter implements Filter {
 
 //            future.setCallback(null);
             Response timeoutResponse = new Response(requestId);
-            timeoutResponse.setStatus(Response.CLIENT_TIMEOUT);
-            timeoutResponse.setErrorMessage("Timeout by filter");
+            timeoutResponse.setStatus(Response.OK);
+            timeoutResponse.setResult("");
+//            timeoutResponse.setStatus(Response.CLIENT_TIMEOUT);
+//            timeoutResponse.setErrorMessage("Timeout by filter");
             DefaultFuture.received(null, timeoutResponse);
         }
     }
