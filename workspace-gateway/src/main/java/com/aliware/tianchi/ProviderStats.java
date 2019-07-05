@@ -61,11 +61,11 @@ public class ProviderStats {
 //        }
 
 //        if (succeeded) {
-            if (stats.ewmaElapsed == -1) {
-                stats.ewmaElapsed = elapsed;
-            } else {
-                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
-            }
+//            if (stats.ewmaElapsed == -1) {
+//                stats.ewmaElapsed = elapsed;
+//            } else {
+//                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
+//            }
 //            if (logger.isDebugEnabled()) {
 //                logger.debug("Update ewma for {} to {} by {}", providerKey, stats.ewmaElapsed, elapsed);
 //            }
