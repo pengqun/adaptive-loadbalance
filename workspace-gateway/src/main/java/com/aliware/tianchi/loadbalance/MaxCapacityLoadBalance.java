@@ -44,6 +44,21 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
                 maxCapacity = capacity;
             }
         }
+        if (bestInvoker == null) {
+            maxCapacity = -1;
+            for (Invoker<T> invoker : invokers) {
+                String providerKey = CommonUtils.getProviderKey(invoker);
+                ProviderStats providerStats = ProviderStats.getStats(providerKey);
+                int max = providerStats.getMaxPoolSize();
+                int active = providerStats.getActive();
+                int capacity = max - active;
+
+                if (bestInvoker == null || capacity > maxCapacity) {
+                    bestInvoker = invoker;
+                    maxCapacity = capacity;
+                }
+            }
+        }
         if (bestInvoker != null) {
 //            if (logger.isDebugEnabled()) {
 //                logger.debug("Choose {} with capacity {}", CommonUtils.getProviderKey(bestInvoker), maxCapacity);
