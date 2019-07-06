@@ -32,6 +32,9 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
         for (Invoker<T> invoker : invokers) {
             String providerKey = CommonUtils.getProviderKey(invoker);
             ProviderStats providerStats = ProviderStats.getStats(providerKey);
+            if (providerStats.isUnavailable()) {
+                continue;
+            }
             int max = providerStats.getMaxPoolSize();
             int active = providerStats.getActive();
             int capacity = max - active;

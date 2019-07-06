@@ -61,11 +61,11 @@ public class ProviderStats {
 //        }
 
 //        if (succeeded) {
-//            if (stats.ewmaElapsed == -1) {
-//                stats.ewmaElapsed = elapsed;
-//            } else {
-//                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
-//            }
+            if (stats.ewmaElapsed == -1) {
+                stats.ewmaElapsed = elapsed;
+            } else {
+                stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
+            }
 //            if (logger.isDebugEnabled()) {
 //                logger.debug("Update ewma for {} to {} by {}", providerKey, stats.ewmaElapsed, elapsed);
 //            }
@@ -77,13 +77,13 @@ public class ProviderStats {
 //            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
 //        }
 
-//        if (succeeded) {
-//            if (stats.errorPenalty.get() > 0) {
-//                stats.errorPenalty.decrementAndGet();
-//            }
-//        } else {
-//            stats.errorPenalty.set(stats.active.get() / 5);
-//        }
+        if (succeeded && (elapsed == -1 || elapsed < stats.ewmaElapsed * 5)) {
+            if (stats.errorPenalty.get() > 0) {
+                stats.errorPenalty.decrementAndGet();
+            }
+        } else {
+            stats.errorPenalty.set(stats.active.get() / 5);
+        }
     }
 
     public int getMaxPoolSize() {
@@ -115,7 +115,8 @@ public class ProviderStats {
     }
 
     public boolean isUnavailable() {
+        return errorPenalty.get() > 0;
 //        return active.get() >= maxPoolSize || errorPenalty.get() > 0;
-        return active.get() >= maxPoolSize;
+//        return active.get() >= maxPoolSize;
     }
 }
