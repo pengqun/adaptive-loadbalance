@@ -77,13 +77,20 @@ public class ProviderStats {
 //            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
 //        }
 
-        if (succeeded && (elapsed == -1 || elapsed < stats.ewmaElapsed * 6)) {
-            if (stats.errorPenalty.get() > 0) {
-                stats.errorPenalty.decrementAndGet();
-            }
-        } else if (stats.active.get() > stats.maxPoolSize / 2) {
+        if (stats.errorPenalty.get() > 0) {
+            stats.errorPenalty.decrementAndGet();
+        } else if (stats.active.get() > stats.maxPoolSize / 2
+                && stats.ewmaElapsed > 0 && elapsed > stats.ewmaElapsed * 6) {
             stats.errorPenalty.set(stats.active.get() / 5);
         }
+
+//        if (succeeded && (stats.ewmaElapsed == -1 || elapsed < stats.ewmaElapsed * 6)) {
+//            if (stats.errorPenalty.get() > 0) {
+//                stats.errorPenalty.decrementAndGet();
+//            }
+//        } else if (stats.active.get() > stats.maxPoolSize / 2) {
+//            stats.errorPenalty.set(stats.active.get() / 5);
+//        }
     }
 
     public int getMaxPoolSize() {
