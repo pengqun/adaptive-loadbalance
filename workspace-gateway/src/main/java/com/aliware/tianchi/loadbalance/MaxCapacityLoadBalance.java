@@ -44,8 +44,7 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
                 maxCapacity = capacity;
             }
         }
-        if (bestInvoker == null) {
-            maxCapacity = -1;
+        if (maxCapacity <= 0) {
             for (Invoker<T> invoker : invokers) {
                 String providerKey = CommonUtils.getProviderKey(invoker);
                 ProviderStats providerStats = ProviderStats.getStats(providerKey);
