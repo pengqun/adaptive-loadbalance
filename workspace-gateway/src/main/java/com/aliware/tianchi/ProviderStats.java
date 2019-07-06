@@ -77,11 +77,11 @@ public class ProviderStats {
 //            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
 //        }
 
-        if (succeeded && (elapsed == -1 || elapsed < stats.ewmaElapsed * 5)) {
+        if (succeeded && (elapsed == -1 || elapsed < stats.ewmaElapsed * 6)) {
             if (stats.errorPenalty.get() > 0) {
                 stats.errorPenalty.decrementAndGet();
             }
-        } else {
+        } else if (stats.active.get() > stats.maxPoolSize / 2) {
             stats.errorPenalty.set(stats.active.get() / 5);
         }
     }
