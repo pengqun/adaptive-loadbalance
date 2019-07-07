@@ -4,6 +4,7 @@ import com.aliware.tianchi.loadbalance.LeastRtLoadBalance;
 import com.aliware.tianchi.loadbalance.MaxCapacityLoadBalance;
 import com.aliware.tianchi.loadbalance.RandomLoadBalance;
 import com.aliware.tianchi.loadbalance.RoundRobinLoadBalance;
+import com.aliware.tianchi.loadbalance.*;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;

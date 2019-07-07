@@ -37,6 +37,8 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 //        if (providerStats.isUnavailable()) {
 //            return 0;
 //        }
+
+
 //        return getWeightByRtAndActive(providerKey, providerStats);
 //        return getWeightByActive(providerKey, providerStats);
 //        return getWeightByRt(providerKey, providerStats);
