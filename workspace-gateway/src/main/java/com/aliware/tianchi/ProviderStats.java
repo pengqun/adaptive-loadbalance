@@ -22,7 +22,7 @@ public class ProviderStats {
 
     private static final int RESET_COUNTER_INTERVAL = 100;
     private static final double EWMA_ALPHA = 0.001;
-    private static final double EWMA_ALPHA_LITTLE = 0.01;
+    private static final double EWMA_ALPHA_LITTLE = 0.1;
 
     private int maxPoolSize = Integer.MAX_VALUE;
 
