@@ -1,7 +1,6 @@
 package com.aliware.tianchi.loadbalance;
 
 import com.aliware.tianchi.CommonUtils;
-import com.aliware.tianchi.LogUtils;
 import com.aliware.tianchi.ProviderStats;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
@@ -27,7 +26,8 @@ public class LeastRtLoadBalance extends AbstractLoadBalance {
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         Invoker<T> bestInvoker = null;
-        int leastRt = -1;
+//        int leastRt = -1;
+        double leastEwma = -1;
 
         for (Invoker<T> invoker : invokers) {
             String providerKey = CommonUtils.getProviderKey(invoker);
@@ -36,25 +36,34 @@ public class LeastRtLoadBalance extends AbstractLoadBalance {
                 continue;
             }
 
-            int successCounter = providerStats.getSuccessCounter();
-            int totalElapsed = providerStats.getTotalElapsed();
-            if (successCounter == 0 || totalElapsed == 0) {
+            double ewma = providerStats.getEwmaElapsed();
+            if (ewma < 0) {
                 continue;
             }
-            int rt = totalElapsed * 1000 / successCounter;
-            if (logger.isDebugEnabled()) {
-                logger.debug("Rt for {}: {} * 1000 / {} = {}", providerKey, totalElapsed, successCounter, rt);
+            if (bestInvoker == null || ewma < leastEwma) {
+                bestInvoker = invoker;
+                leastEwma = ewma;
             }
 
-            if (bestInvoker == null || rt < leastRt) {
-                bestInvoker = invoker;
-                leastRt = rt;
-            }
+//            int successCounter = providerStats.getSuccessCounter();
+//            int totalElapsed = providerStats.getTotalElapsed();
+//            if (successCounter == 0 || totalElapsed == 0) {
+//                continue;
+//            }
+//            int rt = totalElapsed * 1000 / successCounter;
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Rt for {}: {} * 1000 / {} = {}", providerKey, totalElapsed, successCounter, rt);
+//            }
+//
+//            if (bestInvoker == null || rt < leastRt) {
+//                bestInvoker = invoker;
+//                leastRt = rt;
+//            }
         }
         if (bestInvoker != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Choose {} with rt {}", CommonUtils.getProviderKey(bestInvoker), leastRt);
-            }
+//            if (logger.isDebugEnabled()) {
+//                logger.debug("Choose {} with rt {}", CommonUtils.getProviderKey(bestInvoker), leastRt);
+//            }
             return bestInvoker;
         }
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));

@@ -21,7 +21,8 @@ public class ProviderStats {
     private static final ConcurrentMap<String, ProviderStats> allProviderStats = new ConcurrentHashMap<>();
 
     private static final int RESET_COUNTER_INTERVAL = 100;
-    private static final double EWMA_ALPHA = 0.001;
+
+    private static final double EWMA_ALPHA = 0.01;
     private static final double EWMA_ALPHA_LITTLE = 0.1;
 
     private int maxPoolSize = Integer.MAX_VALUE;
@@ -65,10 +66,10 @@ public class ProviderStats {
 //        if (succeeded) {
             if (stats.ewmaElapsed == -1) {
                 stats.ewmaElapsed = elapsed;
-                stats.littleEwmaElapsed = elapsed;
+//                stats.littleEwmaElapsed = elapsed;
             } else {
                 stats.ewmaElapsed = stats.ewmaElapsed + EWMA_ALPHA * (elapsed - stats.ewmaElapsed);
-                stats.littleEwmaElapsed = stats.littleEwmaElapsed + EWMA_ALPHA_LITTLE  * (elapsed - stats.littleEwmaElapsed);
+//                stats.littleEwmaElapsed = stats.littleEwmaElapsed + EWMA_ALPHA_LITTLE  * (elapsed - stats.littleEwmaElapsed);
             }
 //            if (logger.isDebugEnabled()) {
 //                logger.debug("Update ewma for {} to {} by {}", providerKey, stats.ewmaElapsed, elapsed);
@@ -81,13 +82,13 @@ public class ProviderStats {
 //            stats.lastElapsed = stats.lastElapsed + (int) elapsed;
 //        }
 
-        if (stats.errorPenalty.get() > 0) {
-            stats.errorPenalty.decrementAndGet();
-        } else if (stats.active.get() > stats.maxPoolSize / 2
-//                && stats.ewmaElapsed > 0 && elapsed > stats.ewmaElapsed * 6) {
-                && stats.littleEwmaElapsed > stats.ewmaElapsed * 2) {
-            stats.errorPenalty.set(stats.active.get() / 10);
-        }
+//        if (stats.errorPenalty.get() > 0) {
+//            stats.errorPenalty.decrementAndGet();
+//        } else if (stats.active.get() > stats.maxPoolSize / 2
+////                && stats.ewmaElapsed > 0 && elapsed > stats.ewmaElapsed * 6) {
+//                && stats.littleEwmaElapsed > stats.ewmaElapsed * 2) {
+//            stats.errorPenalty.set(stats.active.get() / 10);
+//        }
 
 //        if (succeeded && (stats.ewmaElapsed == -1 || elapsed < stats.ewmaElapsed * 6)) {
 //            if (stats.errorPenalty.get() > 0) {
@@ -127,8 +128,8 @@ public class ProviderStats {
     }
 
     public boolean isUnavailable() {
-        return errorPenalty.get() > 0;
+//        return errorPenalty.get() > 0;
 //        return active.get() >= maxPoolSize || errorPenalty.get() > 0;
-//        return active.get() >= maxPoolSize;
+        return active.get() >= maxPoolSize;
     }
 }
