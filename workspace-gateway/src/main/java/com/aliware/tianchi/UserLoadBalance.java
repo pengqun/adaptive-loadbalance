@@ -37,7 +37,8 @@ public class UserLoadBalance implements LoadBalance {
 //    private LoadBalance loadBalance = new RandomLoadBalance();
 //    private LoadBalance loadBalance = new MaxCapacityLoadBalance();
 //    private LoadBalance loadBalance = new RoundRobinLoadBalance();
-    private LoadBalance loadBalance = new LeastRtLoadBalance();
+//    private LoadBalance loadBalance = new LeastRtLoadBalance();
+    private LoadBalance loadBalance = new HybridLoadBalance();
 
     @Override
     public <T> Invoker<T> select(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
