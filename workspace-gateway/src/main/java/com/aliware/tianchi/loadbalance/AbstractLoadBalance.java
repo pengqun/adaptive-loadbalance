@@ -43,9 +43,9 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 //        return getWeightByActive(providerKey, providerStats);
 //        return getWeightByRt(providerKey, providerStats);
 //        return getWeightByLastRt(providerKey, providerStats);
-        return getWeightByEwmaRt(providerKey, providerStats);
+//        return getWeightByEwmaRt(providerKey, providerStats);
 //        return getWeightByEwmaRtAndActive(providerKey, providerStats);
-//        return getWeightByCapacity(providerKey, providerStats);
+        return getWeightByCapacity(providerKey, providerStats);
     }
 
     private int getWeightByRtAndActive(String providerKey, ProviderStats providerStats) {
