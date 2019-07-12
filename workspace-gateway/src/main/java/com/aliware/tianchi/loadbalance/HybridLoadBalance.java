@@ -6,7 +6,6 @@ import org.apache.dubbo.common.URL;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.RpcException;
-import org.apache.dubbo.rpc.cluster.LoadBalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
 //        LogUtils.turnOnDebugLog(logger);
     }
 
-    private static final int CACHE_TIMES = 3;
+    private static final int CACHE_TIMES_PHASE_1 = 3;
+    private static final int CACHE_TIMES_PHASE_2 = 1;
 
     private Invoker cachedInvoker = null;
     private AtomicInteger cacheCounter = new AtomicInteger(0);
@@ -55,7 +55,7 @@ public class HybridLoadBalance extends AbstractLoadBalance {
                 offset -= weights[i];
                 if (offset < 0) {
                     cachedInvoker = invokers.get(i);
-                    cacheCounter.set(CACHE_TIMES);
+                    cacheCounter.set(CACHE_TIMES_PHASE_1);
                     return invokers.get(i);
                 }
             }
@@ -75,8 +75,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
                 }
             }
             if (bestInvoker != null) {
-                cachedInvoker = bestInvoker;
-                cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
+//                cachedInvoker = bestInvoker;
+//                cacheCounter.set(Math.min(CACHE_TIMES_PHASE_1, maxCapacity - 1));
                 return bestInvoker;
             }
         }
