@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Adapted from org.apache.dubbo.rpc.cluster.loadbalance.RandomLoadBalance
@@ -26,9 +27,18 @@ public class HybridLoadBalance extends AbstractLoadBalance {
 //        LogUtils.turnOnDebugLog(logger);
     }
 
+    private static final int CACHE_TIMES = 1;
+
+    private Invoker cachedInvoker = null;
+    private AtomicInteger cacheCounter = new AtomicInteger(0);
+
     @SuppressWarnings("Duplicates")
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+        if (cacheCounter.getAndDecrement() > 0 && cachedInvoker != null) {
+            //noinspection unchecked
+            return cachedInvoker;
+        }
         int length = invokers.size();
         int[] weights = new int[length];
         int firstWeight = getWeight(invokers.get(0), invocation);
@@ -44,6 +54,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
             for (int i = 0; i < length; i++) {
                 offset -= weights[i];
                 if (offset < 0) {
+                    cachedInvoker = invokers.get(i);
+                    cacheCounter.set(CACHE_TIMES);
                     return invokers.get(i);
                 }
             }
@@ -63,6 +75,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
                 }
             }
             if (bestInvoker != null) {
+                cachedInvoker = bestInvoker;
+                cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
                 return bestInvoker;
             }
         }
