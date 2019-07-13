@@ -26,7 +26,7 @@ public class HybridLoadBalance extends AbstractLoadBalance {
 //        LogUtils.turnOnDebugLog(logger);
     }
 
-    private static final int CACHE_TIMES_PHASE_1 = 3;
+    private static final int CACHE_TIMES_PHASE_1 = 5;
     private static final int CACHE_TIMES_PHASE_2 = 1;
 
     private Invoker cachedInvoker = null;
