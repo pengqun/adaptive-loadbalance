@@ -50,8 +50,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
             totalWeight += weight;
         }
         if (totalWeight > 0) {
-//            int offset = ThreadLocalRandom.current().nextInt(totalWeight);
-            int offset = RandomUtils.nextInt(totalWeight);
+            int offset = ThreadLocalRandom.current().nextInt(totalWeight);
+//            int offset = RandomUtils.nextInt(totalWeight);
             for (int i = 0; i < length; i++) {
                 offset -= weights[i];
                 if (offset < 0) {
