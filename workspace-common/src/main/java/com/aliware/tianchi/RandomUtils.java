@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RandomUtils {
 
-    private static final int POOL_SIZE = 10000;
+    private static final int POOL_SIZE = 100000;
 
     private static ThreadLocal<List<Integer>> randomPool = ThreadLocal.withInitial(() -> new ArrayList<>(POOL_SIZE));
 
