@@ -27,7 +27,7 @@ public class HybridLoadBalance extends AbstractLoadBalance {
 //        LogUtils.turnOnDebugLog(logger);
     }
 
-    private static final int CACHE_TIMES_PHASE_1 = 2;
+    private static final int CACHE_TIMES_PHASE_1 = 3;
     private static final int CACHE_TIMES_PHASE_2 = 2;
 
     private Invoker cachedInvoker = null;
@@ -36,9 +36,9 @@ public class HybridLoadBalance extends AbstractLoadBalance {
     @SuppressWarnings("Duplicates")
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-//        if (cacheCounter.getAndDecrement() > 0 && cachedInvoker != null) {
-//            return cachedInvoker;
-//        }
+        if (cacheCounter.getAndDecrement() > 0) {
+            return cachedInvoker;
+        }
         int length = invokers.size();
         int[] weights = new int[length];
         int firstWeight = getWeight(invokers.get(0), invocation);
@@ -55,8 +55,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
             for (int i = 0; i < length; i++) {
                 offset -= weights[i];
                 if (offset < 0) {
-//                    cachedInvoker = invokers.get(i);
-//                    cacheCounter.set(CACHE_TIMES_PHASE_1);
+                    cachedInvoker = invokers.get(i);
+                    cacheCounter.set(CACHE_TIMES_PHASE_1);
                     return invokers.get(i);
                 }
             }
