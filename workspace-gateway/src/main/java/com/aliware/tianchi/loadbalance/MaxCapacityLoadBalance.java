@@ -58,7 +58,8 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
 //            }
             cachedInvoker = bestInvoker;
 //            cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
-            cacheCounter.set(maxCapacity - secondCapacity - 1);
+//            cacheCounter.set(maxCapacity - secondCapacity - 1);
+            cacheCounter.set((maxCapacity - secondCapacity) / 2);
             return bestInvoker;
         }
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
