@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,11 +35,17 @@ public class HybridLoadBalance extends AbstractLoadBalance {
     private Invoker cachedInvoker = null;
     private AtomicInteger cacheCounter = new AtomicInteger(0);
 
+    private Queue<Invoker> cacheQueue = new ConcurrentLinkedQueue<>();
+
     @SuppressWarnings("Duplicates")
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        if (cacheCounter.getAndDecrement() > 0) {
-            return cachedInvoker;
+//        if (cacheCounter.getAndDecrement() > 0) {
+//            return cachedInvoker;
+//        }
+        Invoker cached = cacheQueue.poll();
+        if (cached != null) {
+            return cached;
         }
         int length = invokers.size();
         int[] weights = new int[length];
@@ -55,9 +63,13 @@ public class HybridLoadBalance extends AbstractLoadBalance {
             for (int i = 0; i < length; i++) {
                 offset -= weights[i];
                 if (offset < 0) {
-                    cachedInvoker = invokers.get(i);
-                    cacheCounter.set(CACHE_TIMES_PHASE_1);
-                    return invokers.get(i);
+                    Invoker<T> result = invokers.get(i);
+//                    cachedInvoker = invokers.get(i);
+//                    cacheCounter.set(CACHE_TIMES_PHASE_1);
+                    cacheQueue.add(result);
+                    cacheQueue.add(result);
+                    cacheQueue.add(result);
+                    return result;
                 }
             }
         } else {
