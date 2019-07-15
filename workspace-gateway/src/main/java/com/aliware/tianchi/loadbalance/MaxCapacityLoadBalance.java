@@ -37,34 +37,19 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
         }
         Invoker<T> bestInvoker = null;
         int maxCapacity = -1;
+        int secondCapacity = -1;
 
         for (Invoker<T> invoker : invokers) {
             String providerKey = CommonUtils.getProviderKey(invoker);
             ProviderStats providerStats = ProviderStats.getStats(providerKey);
-            if (providerStats.isUnavailable()) {
-                continue;
-            }
             int max = providerStats.getMaxPoolSize();
             int active = providerStats.getActive();
             int capacity = max - active;
 
             if (bestInvoker == null || capacity > maxCapacity) {
                 bestInvoker = invoker;
+                secondCapacity = maxCapacity;
                 maxCapacity = capacity;
-            }
-        }
-        if (maxCapacity <= 0) {
-            for (Invoker<T> invoker : invokers) {
-                String providerKey = CommonUtils.getProviderKey(invoker);
-                ProviderStats providerStats = ProviderStats.getStats(providerKey);
-                int max = providerStats.getMaxPoolSize();
-                int active = providerStats.getActive();
-                int capacity = max - active;
-
-                if (bestInvoker == null || capacity > maxCapacity) {
-                    bestInvoker = invoker;
-                    maxCapacity = capacity;
-                }
             }
         }
         if (bestInvoker != null) {
@@ -72,7 +57,8 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
 //                logger.debug("Choose {} with capacity {}", CommonUtils.getProviderKey(bestInvoker), maxCapacity);
 //            }
             cachedInvoker = bestInvoker;
-            cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
+//            cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
+            cacheCounter.set(maxCapacity - secondCapacity - 1);
             return bestInvoker;
         }
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
