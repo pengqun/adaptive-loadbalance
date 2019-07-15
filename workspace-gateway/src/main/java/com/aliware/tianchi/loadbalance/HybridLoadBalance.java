@@ -35,18 +35,18 @@ public class HybridLoadBalance extends AbstractLoadBalance {
     private Invoker cachedInvoker = null;
     private AtomicInteger cacheCounter = new AtomicInteger(0);
 
-    private Queue<Invoker> cacheQueue = new ConcurrentLinkedQueue<>();
+//    private Queue<Invoker> cacheQueue = new ConcurrentLinkedQueue<>();
 
     @SuppressWarnings("Duplicates")
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-//        if (cacheCounter.getAndDecrement() > 0) {
-//            return cachedInvoker;
-//        }
-        Invoker cached = cacheQueue.poll();
-        if (cached != null) {
-            return cached;
+        if (cacheCounter.getAndDecrement() > 0) {
+            return cachedInvoker;
         }
+//        Invoker cached = cacheQueue.poll();
+//        if (cached != null) {
+//            return cached;
+//        }
         int length = invokers.size();
         int[] weights = new int[length];
         int firstWeight = getWeight(invokers.get(0), invocation);
@@ -64,11 +64,11 @@ public class HybridLoadBalance extends AbstractLoadBalance {
                 offset -= weights[i];
                 if (offset < 0) {
                     Invoker<T> result = invokers.get(i);
-//                    cachedInvoker = invokers.get(i);
-//                    cacheCounter.set(CACHE_TIMES_PHASE_1);
-                    cacheQueue.add(result);
-                    cacheQueue.add(result);
-                    cacheQueue.add(result);
+                    cachedInvoker = invokers.get(i);
+                    cacheCounter.set(CACHE_TIMES_PHASE_1);
+//                    cacheQueue.add(result);
+//                    cacheQueue.add(result);
+//                    cacheQueue.add(result);
                     return result;
                 }
             }
@@ -90,7 +90,7 @@ public class HybridLoadBalance extends AbstractLoadBalance {
             if (bestInvoker != null) {
 //                cachedInvoker = bestInvoker;
 //                cacheCounter.set(Math.min(CACHE_TIMES_PHASE_2, maxCapacity - 1));
-                cacheQueue.add(bestInvoker);
+//                cacheQueue.add(bestInvoker);
                 return bestInvoker;
             }
         }

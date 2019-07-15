@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author ./ignore 2019-06-25
@@ -24,8 +25,16 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
 //        LogUtils.turnOnDebugLog(logger);
     }
 
+    private static final int CACHE_TIMES = 5;
+
+    private Invoker cachedInvoker = null;
+    private AtomicInteger cacheCounter = new AtomicInteger(0);
+
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+        if (cacheCounter.getAndDecrement() > 0) {
+            return cachedInvoker;
+        }
         Invoker<T> bestInvoker = null;
         int maxCapacity = -1;
 
@@ -62,6 +71,8 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
 //            if (logger.isDebugEnabled()) {
 //                logger.debug("Choose {} with capacity {}", CommonUtils.getProviderKey(bestInvoker), maxCapacity);
 //            }
+            cachedInvoker = bestInvoker;
+            cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
             return bestInvoker;
         }
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));

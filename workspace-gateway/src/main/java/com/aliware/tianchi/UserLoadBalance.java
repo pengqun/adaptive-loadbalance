@@ -35,10 +35,10 @@ public class UserLoadBalance implements LoadBalance {
 //    private LoadBalance loadBalance = null;
 //    private LoadBalance loadBalance = new LeastActiveLoadBalance();
 //    private LoadBalance loadBalance = new RandomLoadBalance();
-//    private LoadBalance loadBalance = new MaxCapacityLoadBalance();
+    private LoadBalance loadBalance = new MaxCapacityLoadBalance();
 //    private LoadBalance loadBalance = new RoundRobinLoadBalance();
 //    private LoadBalance loadBalance = new LeastRtLoadBalance();
-    private LoadBalance loadBalance = new HybridLoadBalance();
+//    private LoadBalance loadBalance = new HybridLoadBalance();
 //    private LoadBalance loadBalance = new MaxCapacity2LoadBalance();
 
     @Override
