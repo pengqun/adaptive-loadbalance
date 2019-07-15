@@ -90,6 +90,7 @@ public class HybridLoadBalance extends AbstractLoadBalance {
             if (bestInvoker != null) {
 //                cachedInvoker = bestInvoker;
 //                cacheCounter.set(Math.min(CACHE_TIMES_PHASE_2, maxCapacity - 1));
+                cacheQueue.add(bestInvoker);
                 return bestInvoker;
             }
         }
