@@ -30,6 +30,7 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
     private Invoker cachedInvoker = null;
     private AtomicInteger cacheCounter = new AtomicInteger(0);
 
+    @SuppressWarnings("Duplicates")
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
         if (cacheCounter.getAndDecrement() > 0) {
@@ -37,7 +38,7 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
         }
         Invoker<T> bestInvoker = null;
         int maxCapacity = -1;
-        int secondCapacity = -1;
+//        int secondCapacity = -1;
 
         for (Invoker<T> invoker : invokers) {
             String providerKey = CommonUtils.getProviderKey(invoker);
@@ -48,7 +49,7 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
 
             if (bestInvoker == null || capacity > maxCapacity) {
                 bestInvoker = invoker;
-                secondCapacity = maxCapacity;
+//                secondCapacity = maxCapacity;
                 maxCapacity = capacity;
             }
         }
@@ -57,9 +58,9 @@ public class MaxCapacityLoadBalance extends AbstractLoadBalance {
 //                logger.debug("Choose {} with capacity {}", CommonUtils.getProviderKey(bestInvoker), maxCapacity);
 //            }
             cachedInvoker = bestInvoker;
-//            cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
+            cacheCounter.set(Math.min(CACHE_TIMES, maxCapacity - 1));
 //            cacheCounter.set(maxCapacity - secondCapacity - 1);
-            cacheCounter.set((maxCapacity - secondCapacity) / 2);
+//            cacheCounter.set((maxCapacity - secondCapacity) / 2);
             return bestInvoker;
         }
         return invokers.get(ThreadLocalRandom.current().nextInt(invokers.size()));
