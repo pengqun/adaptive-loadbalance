@@ -40,9 +40,9 @@ public class HybridLoadBalance extends AbstractLoadBalance {
     @SuppressWarnings("Duplicates")
     @Override
     public <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
-        if (cacheCounter.getAndDecrement() > 0) {
-            return cachedInvoker;
-        }
+//        if (cacheCounter.getAndDecrement() > 0) {
+//            return cachedInvoker;
+//        }
 //        Invoker cached = cacheQueue.poll();
 //        if (cached != null) {
 //            return cached;
@@ -64,8 +64,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
                 offset -= weights[i];
                 if (offset < 0) {
                     Invoker<T> result = invokers.get(i);
-                    cachedInvoker = invokers.get(i);
-                    cacheCounter.set(CACHE_TIMES_PHASE_1);
+//                    cachedInvoker = invokers.get(i);
+//                    cacheCounter.set(CACHE_TIMES_PHASE_1);
 //                    cacheQueue.add(result);
 //                    cacheQueue.add(result);
 //                    cacheQueue.add(result);
@@ -88,8 +88,8 @@ public class HybridLoadBalance extends AbstractLoadBalance {
                 }
             }
             if (bestInvoker != null) {
-                cachedInvoker = bestInvoker;
-                cacheCounter.set(Math.min(CACHE_TIMES_PHASE_2, maxCapacity - 1));
+//                cachedInvoker = bestInvoker;
+//                cacheCounter.set(Math.min(CACHE_TIMES_PHASE_2, maxCapacity - 1));
 //                cacheQueue.add(bestInvoker);
                 return bestInvoker;
             }
