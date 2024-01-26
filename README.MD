@@ -80,6 +80,4 @@ PTS 以固定连接数（1024）向 Gateway 发送请求，按照 PTS 统计的�
 
 
 
-**P.S.** 代码有点乱，没整理过... 不过这道题实现没太多新奇的地方，[复赛题目]([GitHub - pengqun/mqrace2019: 第五届阿里中间件性能挑战赛-决赛 @2019](https://github.com/pengqun/mqrace2019))更有意思点。
-
-
+**P.S.** 代码有点乱，没整理过... 不过这道题实现没太多新奇的地方，[复赛题目](https://github.com/pengqun/mqrace2019) 更有意思点。
